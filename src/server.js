@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors()); 
 const connection = mysql2.createConnection({
-  host: 'localhost', // lisää tähän oma hostisi
+  host: '3.75.158.163', // lisää tähän oma hostisi
   user: 'root', // lisää tähän oma käyttäjäsi
   password: 'ubhx72ge', // lisää tähän tietokantasi salasana
   database: 'ajojarjestelma', // lisää tähän tietokantasi nimi 
