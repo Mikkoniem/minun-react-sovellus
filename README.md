@@ -2,7 +2,6 @@
 
 Tämä on ajonhallintajärjestelmä, joka auttaa organisaatioita hallinnoimaan ajoneuvojen ja kuljetusten tietoja.
 
-https://minun-react-sovellus.onrender.com/ näet kirjautumissivun ellei render ole ylittänyt muisti limittiä (tarkistan päivittäin)
 
 ## Toiminnallisuudet
 
