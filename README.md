@@ -54,9 +54,14 @@ Tämä on Express.js-pohjainen RESTful API, joka tarjoaa toiminnallisuuden ajoje
 -----------------------------------------------------------------------
 Käyttöönotto
 Asenna tarvittavat riippuvuudet ajamalla seuraava komento projektin juurikansiossa:
+
+
 yarn
+
 Käynnistä palvelin ajamalla seuraava komento:
 yarn start 
+
+
 --------------------------
 Huomioita
 Tämä API on tarkoitettu toimimaan paikallisesti (localhost), eikä sitä ole suunniteltu tuotantokäyttöön sellaisenaan.
