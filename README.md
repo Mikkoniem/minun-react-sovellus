@@ -2,6 +2,8 @@
 
 Tämä on ajonhallintajärjestelmä, joka auttaa organisaatioita hallinnoimaan ajoneuvojen ja kuljetusten tietoja.
 
+https://minun-react-sovellus.onrender.com/ näet kirjautumissivun ellei render ole ylittänyt muisti limittiä (tarkistan päivittäin)
+
 ## Toiminnallisuudet
 
 - Kirjautuminen: Käyttäjät voivat kirjautua sisään ja ulos järjestelmään.
@@ -68,4 +70,41 @@ Tämä API on tarkoitettu toimimaan paikallisesti (localhost), eikä sitä ole s
 API olettaa, että käytettävissä on MySQL-tietokanta, ja se käyttää oletuksena localhost-yhteyttä osoitteeseen localhost:3306.
 Ennen kuin käytät tätä API:a, varmista, että sinulla on MySQL-tietokanta, ja muokkaa tarvittaessa yhteysasetukset vastaamaan omia ympäristösi asetuksia.
 Tämä API tarjoaa end pointit ajojen hallintaan (/api/luoajo, /api/ajot, /api/ajajat, /api/ajot/:id) ja käyttäjien kirjautumiseen (/login).
+
+Jotta saat pääset kirjautumaan, toimi näin:
+---
+1. luo mysql tietokanta: (katso server.js tiedot ja luo näillä mysql tietokanta)
+2. tarvitset 2 taulukkoa. ensimmäisen taulukon luot komennolla:
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    firstname VARCHAR(50),
+    lastname VARCHAR(50),
+    email VARCHAR(100),
+    password VARCHAR(255),
+    rooli VARCHAR(20)
+);
+
+toisen taulukon luot komennolla:
+
+CREATE TABLE ajo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    asiakas VARCHAR(100),
+    ajankohta DATETIME,
+    osoite VARCHAR(255),
+    paikkakunta VARCHAR(100),
+    yhteystiedot VARCHAR(255),
+    lisatietoja TEXT,
+    lat DECIMAL(10, 8),
+    lng DECIMAL(11, 8),
+    ajaja VARCHAR(100)
+);
+
+3. kun taulukko on luotu, voit luoda kuljettajan rekisteröitymällä. jos haluat dispatcher roolin, joudut luomaan käyttäjän mysql:lään käsin. tässä esimerkki käyttäjästä:
+
+INSERT INTO users (firstname, lastname, email, password, rooli)
+VALUES ('John', 'Doe', 'john.doe@example.com', 'salasana', 'dispatcher');
+
+4. kun olet luonut nämä, avaa sivu, käynnistä server.js nodella ja kirjaudu tai rekisteröi uusi käyttäjä.
+
 
