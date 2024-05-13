@@ -1,46 +1,66 @@
-# Getting Started with Create React App
+# Ajonhallintajärjestelmä
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Tämä on ajonhallintajärjestelmä, joka auttaa organisaatioita hallinnoimaan ajoneuvojen ja kuljetusten tietoja.
 
-## Available Scripts
+## Toiminnallisuudet
 
-In the project directory, you can run:
+- Kirjautuminen: Käyttäjät voivat kirjautua sisään ja ulos järjestelmään.
+- Ajoneuvojen hallinta: Käyttäjät voivat lisätä, muokata ja poistaa ajoja.
+- Kuljetusten hallinta: Käyttäjä, joka on dispatcher, voi luoda uusia kuljetuksia.Kaikki käyttäjät voivat tarkastella olemassa olevia kuljetuksia.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Teknologiat
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Frontend: React.js, TypeScript, CSS
+- Backend: Node.js, Express.js, MySQL
 
-### `npm test`
+------------------------------------------------------------------------------------------------------------------
+LoginForm-komponentti
+LoginForm-komponentti on vastuussa käyttäjien kirjautumisesta järjestelmään. Se tarjoaa käyttöliittymän, jossa käyttäjä voi syöttää sähköpostiosoitteensa ja salasanansa.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Toiminnallisuudet
+Mahdollistaa käyttäjän kirjautumisen antamalla sähköpostiosoitteen ja salasanan.
+Tarjoaa mahdollisuuden rekisteröityä, jos käyttäjällä ei ole vielä tiliä.
+Riippuvuudet
+axios: Käytetään HTTP-pyyntöjen tekemiseen backend-palvelimelle.
+react-router-dom: Mahdollistaa reitityksen käyttöliittymän eri näkymien välillä.
+---------------------------------------------------------------------------------------------------------------------
 
-### `npm run build`
+ Kartta-komponentti
+Kartta-komponentti on vastuussa ajotietojen näyttämisestä karttanäkymässä. Se käyttää react-leaflet-kirjastoa kartan luomiseen ja näyttää Marker-komponentteja ajopisteiden sijainneissa.
+--------------------------------------------------------------------------------------------------------------------
+Toiminnallisuudet
+Näyttää ajotiedot kartalla Markerien avulla.
+Klikkaamalla yksittäistä ajoa kartalla tai listanäkymässä, keskipiste siirtyy kyseisen ajon sijaintiin kartalla.
+Mahdollistaa ajotietojen poistamisen painamalla "Poista" -painiketta.
+Riippuvuudet
+react-leaflet: Käytetään karttanäkymän luomiseen ja Markerien lisäämiseen kartalle.
+axios: HTTP-pyyntöjen tekemiseen backend-palvelimelle.
+leaflet: Kustomoidun Marker-ikonin luomiseen ja käyttöön.
+leaflet/dist/leaflet.css: Leaflet-kirjaston CSS-tyylit karttanäkymää varten.
+LoginForm-komponentti
+LoginForm-komponentti on vastuussa käyttäjien kirjautumisesta järjestelmään. Se tarjoaa käyttöliittymän, jossa käyttäjä voi syöttää sähköpostiosoitteensa ja salasanansa.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Toiminnallisuudet
+Mahdollistaa käyttäjän kirjautumisen antamalla sähköpostiosoitteen ja salasanan.
+Tarjoaa mahdollisuuden rekisteröityä, jos käyttäjällä ei ole vielä tiliä.
+Riippuvuudet
+axios: Käytetään HTTP-pyyntöjen tekemiseen backend-palvelimelle.
+react-router-dom: Mahdollistaa reitityksen käyttöliittymän eri näkymien välillä.
+--------------------------------------------------------------------------------
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Ajojärjestelmä Backend
+Tämä on Express.js-pohjainen RESTful API, joka tarjoaa toiminnallisuuden ajojen hallintaan ja käyttäjien kirjautumiseen.
+-----------------------------------------------------------------------
+Käyttöönotto
+Asenna tarvittavat riippuvuudet ajamalla seuraava komento projektin juurikansiossa:
+yarn
+Käynnistä palvelin ajamalla seuraava komento:
+yarn start 
+--------------------------
+Huomioita
+Tämä API on tarkoitettu toimimaan paikallisesti (localhost), eikä sitä ole suunniteltu tuotantokäyttöön sellaisenaan.
+API olettaa, että käytettävissä on MySQL-tietokanta, ja se käyttää oletuksena localhost-yhteyttä osoitteeseen localhost:3306.
+Ennen kuin käytät tätä API:a, varmista, että sinulla on MySQL-tietokanta, ja muokkaa tarvittaessa yhteysasetukset vastaamaan omia ympäristösi asetuksia.
+Tämä API tarjoaa end pointit ajojen hallintaan (/api/luoajo, /api/ajot, /api/ajajat, /api/ajot/:id) ja käyttäjien kirjautumiseen (/login).
+--------------
