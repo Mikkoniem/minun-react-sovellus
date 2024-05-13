@@ -164,7 +164,7 @@ app.post('/login', (req, res) => {
 
 
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3306;
 app.listen(PORT, () => {
   console.log(`Palvelin käynnissä portissa ${PORT}`);
 });
