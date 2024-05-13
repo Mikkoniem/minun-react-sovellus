@@ -8,8 +8,8 @@ app.use(cors());
 const connection = mysql2.createConnection({
   host: 'localhost', // lisää tähän oma hostisi
   user: 'root', // lisää tähän oma käyttäjäsi
-  password: 'salasana', // lisää tähän tietokantasi salasana
-  database: 'tietokanta', // lisää tähän tietokantasi nimi 
+  password: 'ubhx72ge', // lisää tähän tietokantasi salasana
+  database: 'ajojarjestelma', // lisää tähän tietokantasi nimi 
 });
 connection.connect((err) => {
   if (err) {
