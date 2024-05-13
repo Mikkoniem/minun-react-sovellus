@@ -17,14 +17,14 @@ Tämä on ajonhallintajärjestelmä, joka auttaa organisaatioita hallinnoimaan a
 ------------------------------------------------------------------------------------------------------------------
 LoginForm-komponentti
 LoginForm-komponentti on vastuussa käyttäjien kirjautumisesta järjestelmään. Se tarjoaa käyttöliittymän, jossa käyttäjä voi syöttää sähköpostiosoitteensa ja salasanansa.
-
+------------------------
 Toiminnallisuudet
 Mahdollistaa käyttäjän kirjautumisen antamalla sähköpostiosoitteen ja salasanan.
 Tarjoaa mahdollisuuden rekisteröityä, jos käyttäjällä ei ole vielä tiliä.
 Riippuvuudet
 axios: Käytetään HTTP-pyyntöjen tekemiseen backend-palvelimelle.
 react-router-dom: Mahdollistaa reitityksen käyttöliittymän eri näkymien välillä.
----------------------------------------------------------------------------------------------------------------------
+
 
  Kartta-komponentti
 Kartta-komponentti on vastuussa ajotietojen näyttämisestä karttanäkymässä. Se käyttää react-leaflet-kirjastoa kartan luomiseen ja näyttää Marker-komponentteja ajopisteiden sijainneissa.
@@ -40,14 +40,14 @@ leaflet: Kustomoidun Marker-ikonin luomiseen ja käyttöön.
 leaflet/dist/leaflet.css: Leaflet-kirjaston CSS-tyylit karttanäkymää varten.
 LoginForm-komponentti
 LoginForm-komponentti on vastuussa käyttäjien kirjautumisesta järjestelmään. Se tarjoaa käyttöliittymän, jossa käyttäjä voi syöttää sähköpostiosoitteensa ja salasanansa.
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Toiminnallisuudet
 Mahdollistaa käyttäjän kirjautumisen antamalla sähköpostiosoitteen ja salasanan.
 Tarjoaa mahdollisuuden rekisteröityä, jos käyttäjällä ei ole vielä tiliä.
 Riippuvuudet
 axios: Käytetään HTTP-pyyntöjen tekemiseen backend-palvelimelle.
 react-router-dom: Mahdollistaa reitityksen käyttöliittymän eri näkymien välillä.
---------------------------------------------------------------------------------
+
 
 Ajojärjestelmä Backend
 Tämä on Express.js-pohjainen RESTful API, joka tarjoaa toiminnallisuuden ajojen hallintaan ja käyttäjien kirjautumiseen.
@@ -63,4 +63,4 @@ Tämä API on tarkoitettu toimimaan paikallisesti (localhost), eikä sitä ole s
 API olettaa, että käytettävissä on MySQL-tietokanta, ja se käyttää oletuksena localhost-yhteyttä osoitteeseen localhost:3306.
 Ennen kuin käytät tätä API:a, varmista, että sinulla on MySQL-tietokanta, ja muokkaa tarvittaessa yhteysasetukset vastaamaan omia ympäristösi asetuksia.
 Tämä API tarjoaa end pointit ajojen hallintaan (/api/luoajo, /api/ajot, /api/ajajat, /api/ajot/:id) ja käyttäjien kirjautumiseen (/login).
---------------
+
