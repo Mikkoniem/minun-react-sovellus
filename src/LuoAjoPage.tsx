@@ -18,7 +18,7 @@ const LuoAjoPage: React.FC = () => {
     
     async function fetchAjajat() {
       try {
-        const response = await axios.get('http://localhost:8080/api/ajajat');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajajat`);
         setAjajat(response.data);
       } catch (error) {
         console.error('Virhe haettaessa ajajia:', error);
@@ -37,7 +37,7 @@ const LuoAjoPage: React.FC = () => {
       setLat(paikkatiedot.lat);
       setLng(paikkatiedot.lon);
 
-      const response = await fetch('http://localhost:8080/api/luoajo', {
+       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/luoajo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

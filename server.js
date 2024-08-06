@@ -1,24 +1,62 @@
 const express = require('express');
 const mysql2 = require('mysql2');
 const cors = require('cors');
-const axios = require('axios');
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+
+dotenv.config();
+
 const app = express();
 app.use(express.json());
-app.use(cors()); 
+app.use(cors());
+
+
+const DB_HOST = process.env.DB_HOST;
+const DB_PORT = process.env.DB_PORT;
+const DB_USER = process.env.DB_USER;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const DB_NAME = process.env.DB_NAME;
+const DB_SSL_CA_PATH = process.env.DB_SSL_CA_PATH;
+
+if (!DB_SSL_CA_PATH) {
+  throw new Error('DB_SSL_CA_PATH is not defined. Please check your .env file.');
+}
+
 const connection = mysql2.createConnection({
-  host: 'localhost', // lisää tähän oma hostisi
-  user: 'käyttäjä', // lisää tähän oma käyttäjäsi
-  password: 'salasana', // lisää tähän tietokantasi salasana
-  database: 'tietokanta', // lisää tähän tietokantasi nimi 
+  host: DB_HOST,
+  port: DB_PORT,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
+  ssl: {
+    ca: fs.readFileSync(DB_SSL_CA_PATH),
+    rejectUnauthorized: true
+  }
 });
+
 connection.connect((err) => {
   if (err) {
     console.error('Virhe tietokantayhteyden muodostamisessa:', err);
-    console.log(process.env.REACT_APP_HOST);
     return;
   }
   console.log('Yhdistetty MySQL-tietokantaan.');
-  console.log(process.env.REACT_APP_HOST);
+});
+
+app.get('/test-connection', (req, res) => {
+  const query = 'SELECT 1 + 1 AS result';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Virhe tietokantayhteyden testauksessa:', err);
+      res.status(500).send('Virhe tietokantayhteyden testauksessa');
+    } else {
+      res.json({ message: 'Tietokantayhteys toimii!', result: results[0].result });
+    }
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Serveri käynnissä portissa 3000');
 });
 
 app.post('/api/luoajo', (req, res) => {
@@ -38,18 +76,19 @@ app.post('/api/luoajo', (req, res) => {
   });
 });
 
-app.get('/api/ajajat', (req,res) => {
-  connection.query('SELECT id, firstname, lastname FROM ajojarjestelma.users WHERE rooli = "driver"', (err, results) => {
+
+app.get('/api/ajajat', (req, res) => {
+  connection.query('SELECT id, firstname, lastname FROM ajojarjestelma.users WHERE rooli = ?', ['driver'], (err, results) => {
     if (err) {
-      console.error('virhe haettaessa ajajia:', err);
-      res.status(500).json({ error: 'virhe haettaessa ajajia'});
-      return; 
+      console.error('Virhe haettaessa ajajia:', err);
+      res.status(500).json({ error: 'virhe haettaessa ajajia' });
+      return;
     }
     console.log('Ajotiedot haettu onnistuneesti.');
     res.json(results);
   });
-  
 });
+
 
 app.get('/api/ajot', (req, res) => {
   let query = `
@@ -108,15 +147,23 @@ app.put('/api/ajot/:id', (req, res) => {
 
 app.post('/rekisterointi', (req, res) => {
   const { firstname, lastname, email, password } = req.body;
-  const sql = 'INSERT INTO users (firstname, lastname, email, password) VALUES (?, ?, ?, ?)';
-  connection.query(sql, [firstname, lastname, email, password], (error, results) => {
+  
+  // Tarkistus
+  if (!firstname || !lastname || !email || !password) {
+    return res.status(400).json({ error: 'Kaikki kentät ovat pakollisia.' });
+  }
+
+  
+  const sql = 'INSERT INTO users (firstname, lastname, email, password, rooli) VALUES (?, ?, ?, ?, ?)';
+  const rooli = 'driver'; //rooli oletusarvoisesti 'ajaja'
+  
+  connection.query(sql, [firstname, lastname, email, password, rooli], (error, results) => {
     if (error) {
       console.error('Virhe tallennettaessa tietoja:', error);
-      res.status(500).json({ error: 'Virhe tallennettaessa tietoja' });
-    } else {
-      // Tietojen tallennus onnistui
-      res.status(200).json({ success: true, message: 'Tiedot tallennettu onnistuneesti' });
+      return res.status(500).json({ error: 'Virhe tallennettaessa tietoja' });
     }
+    console.log('Käyttäjä rekisteröity onnistuneesti.');
+    res.status(200).json({ success: true, message: 'Käyttäjä rekisteröity onnistuneesti' });
   });
 });
 

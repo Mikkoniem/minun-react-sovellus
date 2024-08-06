@@ -46,7 +46,8 @@ const Rekisterointi: React.FC = () => {
         throw new Error('Virhe lisätessä ajoa.');
       }
 
-      console.log('Ajo lisätty onnistuneesti.');
+      console.log('Käyttäjä luotu.');
+      alert("Käyttäjä luotu onnistuneesti!.");
     } catch (error) {
       console.error('Virhe rekisteröinnissä:', error);
 
