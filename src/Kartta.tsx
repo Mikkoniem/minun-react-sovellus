@@ -47,7 +47,7 @@ const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
           setAjot(response.data);
         } else if (loggedInUser.role === 'driver') {
           // Haetaan käyttäjän omat ajot
-          const response = await axios.get('https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}');
+          const response = await axios.get(`https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}`);
           setAjot(response.data);
         }
         
