@@ -13,3 +13,11 @@ tässä on toimiva linkki kokeiltavaksi:
 
 https://minun-react-sovellus-1.onrender.com
 
+päästäksesi ajojärjestelijän roolia katsomaan, tässä kirjautumistiedot:
+
+Etunimi:
+kokeileva
+Sukunimi:
+kokeilija
+Salasana:
+django
