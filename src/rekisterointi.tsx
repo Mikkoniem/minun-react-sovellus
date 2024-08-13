@@ -29,7 +29,7 @@ const Rekisterointi: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8080/rekisterointi', {
+      const response = await fetch('https://minun-react-sovellus-1.onrender.com/rekisterointi', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

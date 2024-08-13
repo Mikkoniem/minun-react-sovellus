@@ -43,11 +43,11 @@ const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
   
         if (loggedInUser.role === 'dispatcher') {
           // Haetaan kaikki ajot
-          const response = await axios.get(`http://localhost:8080/api/ajot`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajot`);
           setAjot(response.data);
         } else if (loggedInUser.role === 'driver') {
           // Haetaan käyttäjän omat ajot
-          const response = await axios.get(`http://localhost:8080/api/ajot?ajaja=${loggedInUser.id}`);
+          const response = await axios.get('https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}');
           setAjot(response.data);
         }
         
@@ -67,7 +67,7 @@ const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
   useEffect(() => {
     async function fetchAjajat() {
       try {
-        const response = await axios.get('http://localhost:8080/api/ajajat');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajajat`);
         setAjajat(response.data);
     
         if (loggedInUser && loggedInUser.role === 'dispatcher' && response.data.length > 0) {
@@ -96,7 +96,7 @@ const handleDelete = async (id: number) => {
   console.log('Poistettavan tiedon ID:', id); 
 
   try {
-    await axios.delete(`http://localhost:8080/api/ajot/${id}`);
+    await axios.delete(`https://minun-react-sovellus-1.onrender.com/api/ajot/${id}`);
     setAjot(prevAjot => prevAjot.filter(ajo => ajo.id !== id)); 
   } catch (error) {
     console.error('Virhe poistettaessa ajoa:', error);

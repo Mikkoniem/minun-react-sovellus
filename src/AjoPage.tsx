@@ -29,7 +29,7 @@ const AjoPage: React.FC = () => {
   useEffect(() => {
     const fetchAjot = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/ajot');
+        const response = await axios.get('https://minun-react-sovellus-1.onrender.com/api/ajot');
         setAjot(response.data);
       } catch (error) {
         setError('Virhe haettaessa ajoja tietokannasta.');
@@ -84,7 +84,7 @@ const AjoPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:8080/api/ajot/${editedAjoData.id}`, editedAjoData);
+      const response = await axios.put(`https://minun-react-sovellus-1.onrender.com/api/ajot/${editedAjoData.id}`, editedAjoData);
       console.log('Muokkaus onnistui', response.data);
       const updatedAjot = ajot.map((ajo) => (ajo.id === editedAjoData.id ? editedAjoData : ajo));
       setAjot(updatedAjot);
