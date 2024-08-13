@@ -8,3 +8,8 @@ tulevia muutoksia:
 
 -mysql tietokanta vaihdetaan postgresql
 -muutetaan localhostista palvelimelle  (render)
+
+tässä on toimiva linkki kokeiltavaksi:
+
+https://minun-react-sovellus-1.onrender.com
+
