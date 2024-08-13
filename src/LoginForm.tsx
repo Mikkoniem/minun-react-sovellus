@@ -104,7 +104,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       <label>
         Salasana:
         <input
-          type="text"
+          type="password"
           name="password"
           value={formData.password}
           onChange={handleChange}
