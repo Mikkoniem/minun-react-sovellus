@@ -32,6 +32,11 @@ const LuoAjoPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!osoite || !paikkakunta) {
+      setError('Sinulta puuttuu osoite tai paikkakunta. lisääthän molemmat.');
+      return;
+    }
+
     try {
       const paikkatiedot = await haeSijainti();
       setLat(paikkatiedot.lat);
@@ -60,9 +65,10 @@ const LuoAjoPage: React.FC = () => {
       }
 
       console.log('Ajo lisätty onnistuneesti.');
-      alert(`Olet Lisännyt Ajon kuskille ${ajaja}.`);
+      alert(`Olet Lisännyt Ajon kuskille ${ajaja}. Sijainti: (${paikkatiedot.lat}, ${paikkatiedot.lon})`);
     } catch (error) {
       setError((error as Error).message);
+      console.error('Virhe lisätessä ajoa:', error);
     }
   };
 
@@ -70,6 +76,7 @@ const LuoAjoPage: React.FC = () => {
     try {
       const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${osoite}, ${paikkakunta}`);
       if (response.data.length > 0) {
+        console.log('paikkatiedot', response.data[0]);
         return {
           lat: response.data[0].lat,
           lon: response.data[0].lon,

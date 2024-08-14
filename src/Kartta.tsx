@@ -32,33 +32,34 @@ const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
   }, [loggedInUser]);
   
 
-  useEffect(() => {
-    const haeAjot = async () => {
-      try {
-        if (!loggedInUser) {
-
-          setAjot([]);
-          return;
-        }
-  
-        if (loggedInUser.role === 'dispatcher') {
-          // Haetaan kaikki ajot
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajot`);
-          setAjot(response.data);
-        } else if (loggedInUser.role === 'driver') {
-          // Haetaan käyttäjän omat ajot
-          const response = await axios.get(`https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}`);
-          setAjot(response.data);
-        }
-        
-      } catch (error) {
-        console.error('Virhe haettaessa ajotietoja:', error);
+useEffect(() => {
+  const haeAjot = async () => {
+    try {
+      if (!loggedInUser) {
+        setAjot([]);
+        return;
       }
-    };
-  
-    haeAjot();
-  }, [loggedInUser, ajaja]); 
-  
+
+      let response;
+      if (loggedInUser.role === 'dispatcher') {
+        response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajot`);
+      } else if (loggedInUser.role === 'driver') {
+        response = await axios.get(`https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}`);
+      } else {
+        console.warn('Tuntematon käyttäjärooli:', loggedInUser.role);
+        return;
+      }
+
+      console.log('Ajot API Response:', response.data);
+      setAjot(response.data);
+    } catch (error) {
+      console.error('Virhe haettaessa ajotietoja:', error);
+    }
+  };
+
+  haeAjot();
+}, [loggedInUser, ajaja]);
+
   
 
 
@@ -67,7 +68,7 @@ const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
   useEffect(() => {
     async function fetchAjajat() {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajajat`);
+        const response = await axios.get('http://localhost:8080/api/ajajat');
         setAjajat(response.data);
     
         if (loggedInUser && loggedInUser.role === 'dispatcher' && response.data.length > 0) {
@@ -96,7 +97,7 @@ const handleDelete = async (id: number) => {
   console.log('Poistettavan tiedon ID:', id); 
 
   try {
-    await axios.delete(`https://minun-react-sovellus-1.onrender.com/api/ajot/${id}`);
+    await axios.delete(`http://localhost:8080/api/ajot/${id}`);
     setAjot(prevAjot => prevAjot.filter(ajo => ajo.id !== id)); 
   } catch (error) {
     console.error('Virhe poistettaessa ajoa:', error);
@@ -104,61 +105,65 @@ const handleDelete = async (id: number) => {
 };
 
 
-return (
-  <div>
-    <MapContainer center={mapCenter} zoom={7} style={{ height: '500px', width: '100%' }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
-      {ajot.map((ajo) => (
-        <Marker key={ajo.id} position={[parseFloat(ajo.lat), parseFloat(ajo.lng)]} icon={customIcon}>
-          <Popup>
-        <div>
-          <h2>{ajo.osoite}</h2>
-          <p>Päivämäärä: {new Date(ajo.ajankohta).toLocaleDateString()}</p>
-          <p>Asiakas: {ajo.asiakas}</p>
-          <p>Yhteystiedot: {ajo.yhteystiedot}</p>
-          <p>Lisätiedot: {ajo.lisatietoja}</p>
-          <p>Kuski: {ajo.firstname} {ajo.lastname}</p> 
-        </div>
-      </Popup>
+ return (
+    <div>
+      <MapContainer center={mapCenter} zoom={7} style={{ height: '500px', width: '100%' }}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
+        {ajot.map((ajo) => {
+          const lat = parseFloat(ajo.lat);
+          const lng = parseFloat(ajo.lng);
 
-        </Marker>
-      ))}
-    </MapContainer>
-    <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-      {ajot.map((ajo) => (
-        <div
-          key={ajo.id}
-          style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', margin: '5px', cursor: 'pointer' }}
-          onClick={() => handleAddressClick(parseFloat(ajo.lat), parseFloat(ajo.lng))}
-        >
-          <h3>{ajo.osoite}</h3>
-          <p>Päivämäärä: {new Date(ajo.ajankohta).toLocaleDateString()}</p>
-          <p>Asiakas: {ajo.asiakas}</p>
-          <p>Yhteystiedot: {ajo.yhteystiedot}</p>
-          <p>Lisätiedot: {ajo.lisatietoja}</p>
-          <p>Kuski: {ajo.firstname} {ajo.lastname}</p> 
+          if (isNaN(lat) || isNaN(lng)) {
+            console.error(`Skipping invalid ajo with ID: ${ajo.id}`);
+            return null;
+          }
+
+          return (
+            <Marker key={ajo.id} position={[lat, lng]} icon={customIcon}>
+              <Popup>
+                <div>
+                  <h2>{ajo.osoite}</h2>
+                  <p>Päivämäärä: {new Date(ajo.ajankohta).toLocaleDateString()}</p>
+                  <p>Asiakas: {ajo.asiakas}</p>
+                  <p>Yhteystiedot: {ajo.yhteystiedot}</p>
+                  <p>Lisätiedot: {ajo.lisatietoja}</p>
+                  <p>Kuski: {ajo.firstname} {ajo.lastname}</p>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+      <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+        {ajot.map((ajo) => (
+          <div
+            key={ajo.id}
+            style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', margin: '5px', cursor: 'pointer' }}
+            onClick={() => handleAddressClick(parseFloat(ajo.lat), parseFloat(ajo.lng))}
+          >
+            <h3>{ajo.osoite}</h3>
+            <p>Päivämäärä: {new Date(ajo.ajankohta).toLocaleDateString()}</p>
+            <p>Asiakas: {ajo.asiakas}</p>
+            <p>Yhteystiedot: {ajo.yhteystiedot}</p>
+            <p>Lisätiedot: {ajo.lisatietoja}</p>
+            <p>Kuski: {ajo.firstname} {ajo.lastname}</p>
+          </div>
+        ))}
+      </div>
+      {loggedInUser.role === 'dispatcher' && (
+        <div style={{ marginTop: '20px' }}>
+          <h2>Poistettavat ajotiedot:</h2>
+          <ul>
+            {ajot.map((ajo) => (
+              <li key={ajo.id}>
+                {ajo.osoite} - <button onClick={() => handleDelete(ajo.id)}>Poista</button>
+              </li>
+            ))}
+          </ul>
         </div>
-      ))}
+      )}
     </div>
-    
-    {loggedInUser.role === 'dispatcher' && (
-  <div style={{ marginTop: '20px' }}>
-    <h2>Poistettavat ajotiedot:</h2>
-    <ul>
-      {ajot.map((ajo) => (
-        <li key={ajo.id}>
-          {ajo.osoite} - <button onClick={() => handleDelete(ajo.id)}>Poista</button>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-  </div>
-
-  
-  
-);
-
+  );
 };
 
 export default Kartta;
