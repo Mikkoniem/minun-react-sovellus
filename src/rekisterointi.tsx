@@ -1,5 +1,5 @@
-// Rekisterointi.tsx
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface SignUpFormState {
@@ -17,40 +17,35 @@ const Rekisterointi: React.FC = () => {
     password: '',
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(`Field name: ${name}, Field value: ${value}`);
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
-
-  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://minun-react-sovellus-1.onrender.com/rekisterointi', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstname: formData.firstname,
-          lastname: formData.lastname,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const response = await axios.post(
+        'http://127.0.0.1:8000/users/',
+        formData, // Axios automaattisesti asettaa tämän JSON-muotoon
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error('Virhe lisätessä ajoa.');
+      if (response.status === 201) {
+        console.log('Käyttäjä luotu.');
+        alert("Käyttäjä luotu onnistuneesti!");
+        navigate('/kirjautuminen'); // Ohjataan käyttäjä kirjautumissivulle
       }
-
-      console.log('Käyttäjä luotu.');
-      alert("Käyttäjä luotu onnistuneesti!.");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Virhe rekisteröinnissä:', error);
-
+      alert(error.response?.data?.error || "Rekisteröinti epäonnistui.");
     }
   };
 
@@ -98,7 +93,6 @@ const Rekisterointi: React.FC = () => {
       <br />
       <button type="submit">Rekisteröidy</button>
     </form>
-    
   );
 };
 
