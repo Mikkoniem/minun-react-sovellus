@@ -9,16 +9,16 @@ const LuoAjoPage: React.FC = () => {
   const [yhteystiedot, setYhteystiedot] = useState('');
   const [lisatietoja, setLisatietoja] = useState('');
   const [ajaja, setAjaja] = useState('');
-  const [ajajat, setAjajat] = useState([]);
+  const [ajajat, setAjajat] = useState<any[]>([]);
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
   const [error, setError] = useState<string>('');
 
+  // Hae ajajat backendistä
   useEffect(() => {
-    
     async function fetchAjajat() {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajajat`);
+        const response = await axios.get('http://127.0.0.1:8000/api/users/');
         setAjajat(response.data);
       } catch (error) {
         console.error('Virhe haettaessa ajajia:', error);
@@ -29,54 +29,48 @@ const LuoAjoPage: React.FC = () => {
     fetchAjajat();
   }, []);
 
+  // Lähetä uuden ajon tiedot backendille
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!osoite || !paikkakunta) {
-      setError('Sinulta puuttuu osoite tai paikkakunta. lisääthän molemmat.');
+      setError('Sinulta puuttuu osoite tai paikkakunta. Lisääthän molemmat.');
       return;
     }
 
     try {
+      // Hae sijainti OpenStreetMap API:sta
       const paikkatiedot = await haeSijainti();
       setLat(paikkatiedot.lat);
       setLng(paikkatiedot.lon);
 
-       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/luoajo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          asiakas,
-          ajankohta,
-          osoite,
-          paikkakunta,
-          yhteystiedot,
-          lisatietoja,
-          lat: paikkatiedot.lat,
-          lng: paikkatiedot.lon,
-          ajaja,
-        }),
+      // Lähetä ajon tiedot backendille
+      const response = await axios.post('http://127.0.0.1:8000/api/luoajo/', {
+        asiakas,
+        ajankohta,
+        osoite,
+        paikkakunta,
+        yhteystiedot,
+        lisatietoja,
+        lat: paikkatiedot.lat,
+        lng: paikkatiedot.lon,
+        ajaja,  // Lähetetään ajajan ID
       });
 
-      if (!response.ok) {
-        throw new Error('Virhe lisätessä ajoa.');
-      }
-
-      console.log('Ajo lisätty onnistuneesti.');
-      alert(`Olet Lisännyt Ajon kuskille ${ajaja}. Sijainti: (${paikkatiedot.lat}, ${paikkatiedot.lon})`);
+      console.log('Ajo lisätty onnistuneesti:', response.data);
+      alert(`Olet lisännyt ajon kuskille ${ajaja}. Sijainti: (${paikkatiedot.lat}, ${paikkatiedot.lon})`);
     } catch (error) {
       setError((error as Error).message);
       console.error('Virhe lisätessä ajoa:', error);
     }
   };
 
+  // Hae sijainti OpenStreetMap API:sta
   const haeSijainti = async () => {
     try {
       const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${osoite}, ${paikkakunta}`);
       if (response.data.length > 0) {
-        console.log('paikkatiedot', response.data[0]);
+        console.log('Paikkatiedot:', response.data[0]);
         return {
           lat: response.data[0].lat,
           lon: response.data[0].lon,
@@ -131,18 +125,16 @@ const LuoAjoPage: React.FC = () => {
         </label>
         <br />
 
-    
         <label>
           Valitse ajaja:
           <select value={ajaja} onChange={(e) => setAjaja(e.target.value)}>
-  <option value="">Valitse...</option>
-  {ajajat.map((ajaja: any) => (
-    <option key={ajaja.id} value={ajaja.id}>
-      {ajaja.firstname} {ajaja.lastname}
-    </option>
-  ))}
-</select>
-
+            <option value="">Valitse...</option>
+            {ajajat.map((ajaja) => (
+              <option key={ajaja.id} value={ajaja.id}>
+                {ajaja.firstname} {ajaja.lastname}
+              </option>
+            ))}
+          </select>
         </label>
         <br />
 

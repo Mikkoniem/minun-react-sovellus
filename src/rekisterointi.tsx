@@ -29,7 +29,7 @@ const Rekisterointi: React.FC = () => {
 
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/users/',
+        'http://127.0.0.1:8000/api/rekisterointi/',
         formData, // Axios automaattisesti asettaa tämän JSON-muotoon
         {
           headers: {

@@ -11,7 +11,7 @@ interface SignUpFormState {
 }
 
 interface LoginFormProps {
-  onLogin: (role: string) => void; // Muutettu, välitetään vain rooli
+  onLogin: (role: string) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
@@ -22,62 +22,42 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     password: '',
   });
 
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    console.log(`Field name: ${name}, Field value: ${value}`);
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.firstname || !formData.lastname || !formData.password) {
       alert("Täytä kaikki pakolliset kentät");
       return;
     }
 
-    
-    
     try {
-      const response = await axios.post(`$/127.0.0.1:8000/users/`, {
+      const response = await axios.post('http://127.0.0.1:8000/api/login/', {
         firstname: formData.firstname,
         lastname: formData.lastname,
         password: formData.password,
       });
 
-      console.log("response.data.success:", response);
-  
+      console.log("response:", response.data);
+
       if (response.data.success) {
-        const user = response.data.user;
-        if (user.role === 'driver') {
-          onLogin(user);
-          navigate('/ajonhallinta');
-          alert("Olet Kirjautunut Ajajana.");
-        } else if (user.role === 'dispatcher') {
-          onLogin(user);
-          navigate('/ajonhallinta');
-          alert("Olet Kirjautunut Ajojärjestelijänä.");
-        }
+        const role = response.data.role; 
+        onLogin(role); // välitetään rooli
+        navigate('/ajonhallinta'); // päästetään sivulle
+        alert(`Olet kirjautunut ${role === 'driver' ? 'Ajajana' : 'Ajojärjestelijänä'}.`);
       } else {
-        alert("Väärin meni. yritä uudestaan");
+        alert("Väärin meni. Yritä uudestaan.");
       }
     } catch (error) {
-      console.error('virhe kirjautumisessa', error);
-      alert("epäonnistui. yritä uudestaan");
+      console.error("Virhe kirjautumisessa:", error);
+      alert("Epäonnistui. Yritä uudestaan.");
     }
   };
-  
 
-  
-  
   const handleRegister = () => {
     navigate("/rekisterointi");
   };
-
-  
 
   return (
     <form onSubmit={handleLogin}>
@@ -87,7 +67,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           type="text"
           name="firstname"
           value={formData.firstname}
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
         />
       </label>
       <br />
@@ -97,7 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           type="text"
           name="lastname"
           value={formData.lastname}
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
         />
       </label>
       <br />
@@ -107,7 +87,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           type="password"
           name="password"
           value={formData.password}
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
         />
       </label>
       <br />

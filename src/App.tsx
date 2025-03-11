@@ -1,32 +1,64 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import AjoHallintaPage from './AjoHallintaPage';
-import LuoAjoPage from './LuoAjoPage';
-import Kartta from './Kartta';
-import Rekisterointi from './rekisterointi';
-import AjoPage from './AjoPage';
 import LoginForm from './LoginForm';
+import Rekisterointi from './rekisterointi';
+import LuoAjoPage from './LuoAjoPage';
+import Kartta from './Kartta'; // Tuo Kartta-komponentti
 
+interface User {
+  role: string;
+}
 
 const App: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState<any | null>(null);
-  const handleLogin = (user: any) => {
-    console.log('Käyttäjä kirjautui sisään:', user); 
-    setLoggedInUser(user);
-  };
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
 
+  const handleLogin = (role: string) => {
+    console.log('Käyttäjä kirjautui sisään:', role);
+    setLoggedIn(true); // Aseta kirjautumistila todeksi
+    setLoggedInUser({ role }); // Tallenna käyttäjän rooli
+  };
 
   return (
     <Router>
       <div className="App">
         <Routes>
-        <Route path="/" element={<LoginForm onLogin={(user) => { handleLogin(user); setLoggedIn(true); }} />} />
-           <Route path="/ajonhallinta" element={loggedIn ? <AjoHallintaPage loggedIn={loggedIn} user={loggedInUser} /> : <Navigate to="/" />}/>
-          <Route path="/kartta" element={loggedIn ? <Kartta loggedInUser={loggedInUser}  /> : <Navigate to="/" />} />
-          <Route  path="/luouusi" element={loggedIn ? <LuoAjoPage /> : <Navigate to="/" />} />
+          <Route
+            path="/"
+            element={<LoginForm onLogin={handleLogin} />}
+          />
+          <Route
+            path="/ajonhallinta"
+            element={
+              loggedIn && loggedInUser ? (
+                <AjoHallintaPage loggedIn={loggedIn} user={loggedInUser} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/ajonhallinta/luouusi" // Itsenäinen reitti LuoAjoPage:lle
+            element={
+              loggedIn && loggedInUser?.role === 'driver' ? (
+                <LuoAjoPage />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/kartta" // Itsenäinen reitti Kartta-komponentille
+            element={
+              loggedIn && loggedInUser ? (
+                <Kartta loggedInUser={loggedInUser} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
           <Route path="/rekisterointi" element={<Rekisterointi />} />
-          <Route path="/ajopage" element={<AjoPage />} />
         </Routes>
       </div>
     </Router>
