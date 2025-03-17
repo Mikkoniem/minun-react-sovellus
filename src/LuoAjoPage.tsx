@@ -41,8 +41,11 @@ const LuoAjoPage: React.FC = () => {
     try {
       // Hae sijainti OpenStreetMap API:sta
       const paikkatiedot = await haeSijainti();
-      setLat(paikkatiedot.lat);
-      setLng(paikkatiedot.lon);
+
+      const rajoitettuLat = paikkatiedot.lat.slice(0, 5);
+      const rajoitettuLng = paikkatiedot.lon.slice(0, 5);
+      setLat(rajoitettuLat);
+      setLng(rajoitettuLng);
 
       // Lähetä ajon tiedot backendille
       const response = await axios.post('http://127.0.0.1:8000/api/luoajo/', {
@@ -52,8 +55,8 @@ const LuoAjoPage: React.FC = () => {
         paikkakunta,
         yhteystiedot,
         lisatietoja,
-        lat: paikkatiedot.lat,
-        lng: paikkatiedot.lon,
+        lat: rajoitettuLat,
+        lng: rajoitettuLng,
         ajaja,  // Lähetetään ajajan ID
       });
 

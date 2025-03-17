@@ -11,7 +11,7 @@ interface SignUpFormState {
 }
 
 interface LoginFormProps {
-  onLogin: (role: string) => void;
+  onLogin: (role: string, firstname: string, lastname: string ) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
@@ -26,25 +26,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!formData.firstname || !formData.lastname || !formData.password) {
       alert("Täytä kaikki pakolliset kentät");
       return;
     }
-
+  
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login/', {
         firstname: formData.firstname,
         lastname: formData.lastname,
         password: formData.password,
       });
-
+  
       console.log("response:", response.data);
-
+  
       if (response.data.success) {
-        const role = response.data.role; 
-        onLogin(role); // välitetään rooli
-        navigate('/ajonhallinta'); // päästetään sivulle
+        const { role, firstname, lastname, token } = response.data; 
+        localStorage.setItem('token', token); //token localStorageen
+        onLogin(role, firstname, lastname); 
+        navigate('/ajonhallinta'); 
         alert(`Olet kirjautunut ${role === 'driver' ? 'Ajajana' : 'Ajojärjestelijänä'}.`);
       } else {
         alert("Väärin meni. Yritä uudestaan.");
@@ -54,7 +55,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       alert("Epäonnistui. Yritä uudestaan.");
     }
   };
-
   const handleRegister = () => {
     navigate("/rekisterointi");
   };

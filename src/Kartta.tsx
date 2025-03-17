@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import L from 'leaflet';
 
-
 const customIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -15,97 +14,84 @@ const customIcon = new L.Icon({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
   shadowSize: [41, 41],
 });
+
 interface KarttaProps {
   loggedInUser: any;
 }
 
-
-
-const Kartta: React.FC<{loggedInUser: any}> = ({ loggedInUser }) => {
+const Kartta: React.FC<KarttaProps> = ({ loggedInUser }) => {
   const [ajot, setAjot] = useState<any[]>([]);
   const [ajaja, setAjaja] = useState<string>('');
-  const [ajajat, setAjajat] = useState<[]>([]);
+  const [ajajat, setAjajat] = useState<any[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([60.1695, 24.9354]);
 
   useEffect(() => {
-    console.log(loggedInUser); 
+    console.log(loggedInUser);
   }, [loggedInUser]);
-  
 
-useEffect(() => {
-  const haeAjot = async () => {
-    try {
-      if (!loggedInUser) {
-        setAjot([]);
-        return;
+  useEffect(() => {
+    const haeAjot = async () => {
+      try {
+        if (!loggedInUser) {
+          setAjot([]);
+          return;
+        }
+
+        let response;
+        if (loggedInUser.role === 'ajojärjestelijä') {
+          response = await axios.get('http://localhost:8000/api/ajot/');
+        } else if (loggedInUser.role === 'driver') {
+          response = await axios.get(`http://localhost:8000/api/ajot/?ajaja=${loggedInUser.id}`);
+        } else {
+          console.warn('Tuntematon käyttäjärooli:', loggedInUser.role);
+          return;
+        }
+
+        console.log('Ajot API Response:', response.data);
+        setAjot(response.data);
+      } catch (error) {
+        console.error('Virhe haettaessa ajotietoja:', error);
       }
+    };
 
-      let response;
-      if (loggedInUser.role === 'dispatcher') {
-        response = await axios.get(`${process.env.REACT_APP_API_URL}/api/ajot`);
-      } else if (loggedInUser.role === 'driver') {
-        response = await axios.get(`https://minun-react-sovellus-1.onrender.com/api/ajot?ajaja=${loggedInUser.id}`);
-      } else {
-        console.warn('Tuntematon käyttäjärooli:', loggedInUser.role);
-        return;
-      }
-
-      console.log('Ajot API Response:', response.data);
-      setAjot(response.data);
-    } catch (error) {
-      console.error('Virhe haettaessa ajotietoja:', error);
-    }
-  };
-
-  haeAjot();
-}, [loggedInUser, ajaja]);
-
-  
-
-
-  
+    haeAjot();
+  }, [loggedInUser, ajaja]);
 
   useEffect(() => {
     async function fetchAjajat() {
       try {
-        const response = await axios.get('http://localhost:8080/api/ajajat');
+        const response = await axios.get('http://localhost:8000/api/users/');
         setAjajat(response.data);
-    
-        if (loggedInUser && loggedInUser.role === 'dispatcher' && response.data.length > 0) {
+
+        if (loggedInUser && loggedInUser.role === 'ajojärjestelijä' && response.data.length > 0) {
           setAjaja(response.data);
         }
       } catch (error) {
         console.error('Virhe haettaessa ajajia:', error);
       }
     }
-  
-    if(loggedInUser && loggedInUser.role === 'dispatcher') {
+
+    if (loggedInUser && loggedInUser.role === 'ajojärjestelijä') {
       fetchAjajat();
     }
   }, [loggedInUser]);
-  
-
-
-  
-
 
   const handleAddressClick = (lat: number, lng: number) => {
     setMapCenter([lat, lng]);
   };
 
-const handleDelete = async (id: number) => {
-  console.log('Poistettavan tiedon ID:', id); 
+  const handleDelete = async (id: number) => {
+    console.log('Poistettavan tiedon ID:', id);
 
-  try {
-    await axios.delete(`http://localhost:8080/api/ajot/${id}`);
-    setAjot(prevAjot => prevAjot.filter(ajo => ajo.id !== id)); 
-  } catch (error) {
-    console.error('Virhe poistettaessa ajoa:', error);
-  }
-};
+    try {
+      await axios.delete(`http://localhost:8000/api/ajot/${id}/`);
+      setAjot((prevAjot) => prevAjot.filter((ajo) => ajo.id !== id));
+    } catch (error) {
+      console.error('Virhe poistettaessa ajoa:', error);
+    }
+  };
 
-
- return (
+  return (
     <div>
       <MapContainer center={mapCenter} zoom={7} style={{ height: '500px', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
@@ -127,7 +113,7 @@ const handleDelete = async (id: number) => {
                   <p>Asiakas: {ajo.asiakas}</p>
                   <p>Yhteystiedot: {ajo.yhteystiedot}</p>
                   <p>Lisätiedot: {ajo.lisatietoja}</p>
-                  <p>Kuski: {ajo.firstname} {ajo.lastname}</p>
+                  <p>Kuski: {ajo.ajaja.firstname} {ajo.ajaja.lastname}</p>
                 </div>
               </Popup>
             </Marker>
@@ -146,11 +132,11 @@ const handleDelete = async (id: number) => {
             <p>Asiakas: {ajo.asiakas}</p>
             <p>Yhteystiedot: {ajo.yhteystiedot}</p>
             <p>Lisätiedot: {ajo.lisatietoja}</p>
-            <p>Kuski: {ajo.firstname} {ajo.lastname}</p>
+            <p>Kuski: {ajo.ajaja.firstname} {ajo.ajaja.lastname}</p>
           </div>
         ))}
       </div>
-      {loggedInUser.role === 'dispatcher' && (
+      {loggedInUser.role === 'ajojärjestelijä' && (
         <div style={{ marginTop: '20px' }}>
           <h2>Poistettavat ajotiedot:</h2>
           <ul>
